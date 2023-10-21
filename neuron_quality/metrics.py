@@ -13,8 +13,8 @@ import os
 
 import numpy as np
 
-from swc_handler import tree_to_voxels, parse_swc
-from math_utils import min_distances_between_two_sets
+from utils.swc_handler import tree_to_voxels, parse_swc
+from utils.math_utils import min_distances_between_two_sets
 
 class DistanceEvaluation(object):
     def __init__(self, dsa_thr=2., resample1=True, resample2=True):
@@ -70,7 +70,7 @@ class DistanceEvaluation(object):
 
         if len(voxels1) == 0 or len(voxels2) == 0:
             print(len(voxels1), len(voxels2))
-            return False
+            return None
         
         ds = self.calc_dist(voxels1, voxels2)
         return ds

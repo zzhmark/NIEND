@@ -12,7 +12,7 @@
 import numpy as np
 from scipy.spatial import distance_matrix
 
-from math_utils import calc_included_angles_from_coords, calc_included_angles_from_vectors
+from utils.math_utils import calc_included_angles_from_vectors
 from morph_topo.morphology import Morphology
 
 

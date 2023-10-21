@@ -1,5 +1,6 @@
-import os
-import swc_handler
+# crop gold standard manual reconstruction
+# the processes going outof the block and back are not removed
+from utils import swc_handler
 from tqdm import tqdm
 import numpy as np
 from pathlib import Path

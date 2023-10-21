@@ -13,7 +13,7 @@
 from itertools import groupby
 from collections import Counter
 
-from swc_handler import parse_swc
+from utils.swc_handler import parse_swc
 from morph_topo.morphology import Morphology
 
 class AbstractErrorChecker(object):
