@@ -39,7 +39,7 @@ def main(args):
         return
     p = PBD()
     img = p.load(in_path)[0].astype(np.float32)
-    adaptive_sectional_feedforward_filter(img, sigma, suppression=1)
+    adaptive_sectional_feedforward_filter(img, sigma, suppression=.8)
     vertical_filter(img)
     thr = np.percentile(img, 100 - pct)
     a = (img.shape - rescale_window) // 2

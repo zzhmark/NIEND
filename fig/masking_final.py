@@ -38,31 +38,36 @@ def main(path):
     try:
         raw1 = img[mask > 0]
         raw2 = img[mask2 > mask]
+        raw_stat = img.mean(), img.std()
 
         img = PBD().load(my_dir / path)[0]
         my1 = img[mask > 0]
         my2 = img[mask2 > mask]
+        my_stat = img.mean(), img.std()
 
         img = Raw().load(multi_dir / path.with_suffix('.v3draw'))[0]
         multi1 = img[mask > 0]
         multi2 = img[mask2 > mask]
+        multi_stat = img.mean(), img.std()
 
         img = PBD().load(ada_dir / path)[0]
         ada1 = img[mask > 0]
         ada2 = img[mask2 > mask]
+        ada_stat = img.mean(), img.std()
 
         img = PBD().load(guo_dir / path)[0]
         guo1 = img[mask > 0]
         guo2 = img[mask2 > mask]
+        guo_stat = img.mean(), img.std()
     except Exception as e:
         print(e)
         return None
 
-    return {'raw': (raw1, raw2),
-            'my': (my1, my2),
-            'guo': (guo1, guo2),
-            'multi': (multi1, multi2),
-            'ada': (ada1, ada2)
+    return {'raw': (raw1, raw2, raw_stat),
+            'my': (my1, my2, my_stat),
+            'guo': (guo1, guo2, guo_stat),
+            'multi': (multi1, multi2, multi_stat),
+            'ada': (ada1, ada2, ada_stat)
             }
 
 

@@ -20,7 +20,7 @@
 import copy
 import numpy as np
 import sys
-from swc_handler import get_child_dict, get_index_dict, find_soma_node, find_soma_index, NEURITE_TYPES
+from .swc_handler import get_child_dict, get_index_dict, find_soma_node, find_soma_index, NEURITE_TYPES
 
 sys.setrecursionlimit(100000)
 
