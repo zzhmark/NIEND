@@ -1,14 +1,7 @@
 # Neuronal Image Enhancement though Noise Disentanglement
+**NIEND** is a fast and powerful neuronal image denoising and enhancement algorithm.
 
-## Directory Structure
-
-* niend.py: main filtering functions, you can import the functions within for your own use.
-* experiments: scripts performing all experiments.
-* plot: scripts plotting figures for our paper.
-* utils: for operating swc, computing metrics, etc.
-* examples: image and tracing files for the same neuronal block.
-
-More readme can be found under each folder.
+![viz.jpg](viz.jpg)
 
 ## Usage
 
@@ -39,6 +32,16 @@ img = PBD().save('xxx.v3dpbd', img.reshape(1, *img.shape))      # saved as 4D
 img = Raw().save('xxx.v3draw', img.reshape(1, *img.shape))      # saved as 4D
 img = load_image('xxx.tiff')
 ```
+
+## Repository Contents
+
+* niend.py: main filtering functions, you can import the functions within for your own use.
+* experiments: scripts performing all experiments.
+* plot: scripts plotting figures for our paper.
+* utils: for operating swc, computing metrics, etc.
+* examples: image and tracing files for the same neuronal block.
+
+More readme can be found under each folder.
 
 ## Authors
 Zuo-Han Zhao, Braintell, Southeast University  
