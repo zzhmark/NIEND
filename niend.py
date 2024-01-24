@@ -17,7 +17,7 @@ def orthogonal_filter(img):
     img -= np.add.outer(my, mx).astype(int)
 
 
-def diffusion_filter(img: np.ndarray, sigma=10., truncate=3., scaling=1, suppression=.8):
+def diffusion_filter(img: np.ndarray, sigma=10., truncate=2., suppression=.9):
     """
     cancel flare and background noise. More adaptive canceling, and its effect can be tuned.
 
@@ -28,22 +28,18 @@ def diffusion_filter(img: np.ndarray, sigma=10., truncate=3., scaling=1, suppres
     :param suppression: 0-1, suppress the canceling effect.
     :return: processed image
     """
-    diffuse = functools.partial(gaussian, sigma=sigma / scaling, preserve_range=True, truncate=truncate)
-    downscale = functools.partial(downscale_local_mean, factors=scaling)
-    upscale = functools.partial(rescale, scale=scaling)
+    diffuse = functools.partial(gaussian, sigma=sigma, preserve_range=True, truncate=truncate)
 
-    out = np.zeros_like(img)
-    gpool = diffuse(downscale(img[-1]))
-    for i in range(1, img.shape[0]):
+    gpool = diffuse(img[-1])
+    for i in range(img.shape[0]):
         i = img.shape[0] - i - 1
         m1, m2 = img[i].mean(), gpool.mean()
         if m2 == 0:
             m = suppression
         else:
             m = m1 / m2 * suppression
-        out[i] = (img[i] - upscale(m * gpool)).clip(0)
-        gpool = diffuse(downscale(out[i]) + gpool)
-    return out
+        img[i] = (img[i] - m * gpool).clip(0)
+        gpool = diffuse(img[i] + gpool)
 
 
 def standard_niend(img: np.ndarray, sigma=10., pct=1, soma=(.5, .5, .5), win=(32, 128, 128), wavelet_levels=2):
@@ -56,10 +52,10 @@ def standard_niend(img: np.ndarray, sigma=10., pct=1, soma=(.5, .5, .5), win=(32
     a = (ct - win // 2).clip(0)
     b = (ct + win // 2).clip(None, img.shape)
 
-    levels = min(255, (img[a[0]:b[0], a[1]:b[1], a[2]:b[2]].max() - thr) * .5)
+    high = min(255, img[a[0]:b[0], a[1]:b[1], a[2]:b[2]].max() * .5 - thr)
     img -= thr
-    np.clip(img, 0, levels, img)
-    img /= levels
+    np.clip(img, 0, high, img)
+    img /= high
     wavelet_denoising(img, wavelet_levels)
     img = img_as_ubyte(img.clip(0, 1))
     return img

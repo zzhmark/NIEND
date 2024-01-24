@@ -1,6 +1,6 @@
 # evaluate different reconstruction against gold standard
 
-from neuron_quality.metrics import DistanceEvaluation
+from utils.neuron_quality import DistanceEvaluation
 import pandas as pd
 from pathlib import Path
 from multiprocessing import Pool

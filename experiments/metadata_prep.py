@@ -34,7 +34,6 @@ if __name__ == '__main__':
             x.append(soma[0])
             y.append(soma[1])
             z.append(soma[2])
-    eval = pd.read_csv(r"D:\rectify\eval.csv", index_col=0)
     # with open(r"D:\rectify\time_use.pickle", 'rb') as f:
     #     times1 = pickle.load(f)
     # with open(r"D:\rectify\time_use_256.pickle", 'rb') as f:
@@ -77,6 +76,7 @@ if __name__ == '__main__':
 
     imgs = [i.with_suffix('.swc').name for i in Path(r"D:\rectify\my").rglob('*.v3dpbd')]
     imgs = [*filter(lambda f: tab.at[f, 'sparse'] == 1, imgs)]
+
     with open(r"D:\rectify\masking_guo_metric.pickle", 'rb') as f:
         raw, my, multi, ada, guo = pickle.load(f)
     imgs = [*filter(lambda x: (r"Z:\SEU-ALLEN\Users\zuohan\trans\rectify_1891\multiscale" / Path(x).with_suffix('.v3draw')).exists(), imgs)]
@@ -87,24 +87,98 @@ if __name__ == '__main__':
     guo = np.transpose(guo)
     df = pd.DataFrame({
         'gold_standard': tab.loc[imgs, 'gold_standard'],
-        'raw_sbc': raw[0], 'raw_ent': raw[1], 'raw_uni': raw[2], 'raw_rsd': raw[3],
-        'adathr_sbc': ada[0], 'adathr_ent': ada[1], 'adathr_uni': ada[2], 'adathr_rsd': ada[3],
-        'multiscale_sbc': multi[0], 'multiscale_ent': multi[1], 'multiscale_uni': multi[2], 'multiscale_rsd': multi[3],
-        'guo_sbc': guo[0], 'guo_ent': guo[1], 'guo_uni': guo[2], 'guo_rsd': guo[3],
-        'NIEND_sbc': my[0], 'NIEND_ent': my[1], 'NIEND_uni': my[2], 'NIEND_rsd': my[3],
+        'raw_sbc': raw[0], 'raw_uni': raw[2], 'raw_rsd': raw[3],
+        'adathr_sbc': ada[0], 'adathr_uni': ada[2], 'adathr_rsd': ada[3],
+        'multiscale_sbc': multi[0], 'multiscale_uni': multi[2], 'multiscale_rsd': multi[3],
+        'guo_sbc': guo[0], 'guo_uni': guo[2], 'guo_rsd': guo[3],
+        'NIEND_sbc': my[0], 'NIEND_uni': my[2], 'NIEND_rsd': my[3],
     })
 
+    eval = pd.read_csv(r"D:\rectify\eval.csv", index_col=0)
     eval.rename(columns={'mul_recall': 'multiscale_recall', 'ada_recall': 'adathr_recall', 'my_recall': 'NIEND_recall',
                          'mul_precision': 'multiscale_precision', 'ada_precision': 'adathr_precision', 'my_precision': 'NIEND_precision'}, inplace=True)
     eval = pd.concat([tab.loc[eval.index, 'gold_standard'], eval], axis=1)
-    eval['NIEND_f1'] = 2 * (eval['NIEND_precision'] * eval['NIEND_recall']) / (eval['NIEND_precision'] + eval['NIEND_recall'] + .00001)
+    eval['raw_f1'] = 2 * (eval['raw_precision'] * eval['raw_recall']) / (eval['raw_precision'] + eval['raw_recall'] + .00001)
     eval['guo_f1'] = 2 * (eval['guo_precision'] * eval['guo_recall']) / (eval['guo_precision'] + eval['guo_recall'] + .00001)
     eval['multiscale_f1'] = (2 * (eval['multiscale_precision'] * eval['multiscale_recall']) /
                             (eval['multiscale_precision'] + eval['multiscale_recall'] + .00001))
     eval['adathr_f1'] = 2 * (eval['adathr_precision'] * eval['adathr_recall']) / (eval['adathr_precision'] + eval['adathr_recall'] + .00001)
     eval['NIEND_f1'] = 2 * (eval['NIEND_precision'] * eval['NIEND_recall']) / (eval['NIEND_precision'] + eval['NIEND_recall'] + .00001)
 
-    with pd.ExcelWriter(r'D:\rectify\Supplementary_data.xlsx') as writer:
+    with open(r"D:\rectify\psf_masking_guo_metric.pickle", 'rb') as f:
+        raw, psf, my, names = pickle.load(f)
+    imgs = [*filter(lambda x: (r"Z:\SEU-ALLEN\Users\zuohan\trans\rectify_1891\multiscale" / Path(x).with_suffix('.v3draw')).exists(), imgs)]
+    raw = np.transpose(raw)
+    psf = np.transpose(psf)
+    my = np.transpose(my)
+    df_psf = pd.DataFrame({
+        'names': names,
+        'raw_sbc': raw[0], 'raw_uni': raw[2], 'raw_rsd': raw[3],
+        'psf_sbc': psf[0], 'psf_uni': psf[2], 'psf_rsd': psf[3],
+        'NIEND_sbc': my[0], 'NIEND_uni': my[2], 'NIEND_rsd': my[3],
+    })
+
+    eval_gps = pd.read_csv(r"D:\rectify\eval_gps.csv", index_col=0)
+    eval_gps.rename(columns={'mul_recall': 'multiscale_recall', 'ada_recall': 'adathr_recall', 'my_recall': 'NIEND_recall',
+                         'mul_precision': 'multiscale_precision', 'ada_precision': 'adathr_precision',
+                         'my_precision': 'NIEND_precision'}, inplace=True)
+    eval_gps = pd.concat([tab.loc[eval_gps.index, 'gold_standard'], eval_gps], axis=1)
+    eval_gps['raw_f1'] = (2 * (eval_gps['raw_precision'] * eval_gps['raw_recall']) /
+                          (eval_gps['raw_precision'] + eval_gps['raw_recall'] + .00001))
+    eval_gps['guo_f1'] = 2 * (eval_gps['guo_precision'] * eval_gps['guo_recall']) / (
+                eval_gps['guo_precision'] + eval_gps['guo_recall'] + .00001)
+    eval_gps['multiscale_f1'] = (2 * (eval_gps['multiscale_precision'] * eval_gps['multiscale_recall']) /
+                             (eval_gps['multiscale_precision'] + eval_gps['multiscale_recall'] + .00001))
+    eval_gps['adathr_f1'] = 2 * (eval_gps['adathr_precision'] * eval_gps['adathr_recall']) / (
+                eval_gps['adathr_precision'] + eval_gps['adathr_recall'] + .00001)
+    eval_gps['NIEND_f1'] = 2 * (eval_gps['NIEND_precision'] * eval_gps['NIEND_recall']) / (
+                eval_gps['NIEND_precision'] + eval_gps['NIEND_recall'] + .00001)
+
+    eval_app1 = pd.read_csv(r"D:\rectify\eval_app1.csv", index_col=0)
+    eval_app1.rename(
+        columns={'mul_recall': 'multiscale_recall', 'ada_recall': 'adathr_recall', 'my_recall': 'NIEND_recall',
+                 'mul_precision': 'multiscale_precision', 'ada_precision': 'adathr_precision',
+                 'my_precision': 'NIEND_precision'}, inplace=True)
+    eval_app1 = pd.concat([tab.loc[eval_app1.index, 'gold_standard'], eval_app1], axis=1)
+    eval_app1['raw_f1'] = (2 * (eval_app1['raw_precision'] * eval_app1['raw_recall']) /
+                           (eval_app1['raw_precision'] + eval_app1['raw_recall'] + .00001))
+    eval_app1['guo_f1'] = 2 * (eval_app1['guo_precision'] * eval_app1['guo_recall']) / (
+            eval_app1['guo_precision'] + eval_app1['guo_recall'] + .00001)
+    eval_app1['multiscale_f1'] = (2 * (eval_app1['multiscale_precision'] * eval_app1['multiscale_recall']) /
+                                 (eval_app1['multiscale_precision'] + eval_app1['multiscale_recall'] + .00001))
+    eval_app1['adathr_f1'] = 2 * (eval_app1['adathr_precision'] * eval_app1['adathr_recall']) / (
+            eval_app1['adathr_precision'] + eval_app1['adathr_recall'] + .00001)
+    eval_app1['NIEND_f1'] = 2 * (eval_app1['NIEND_precision'] * eval_app1['NIEND_recall']) / (
+            eval_app1['NIEND_precision'] + eval_app1['NIEND_recall'] + .00001)
+
+    eval_bn = pd.read_csv(r"D:\rectify\bigneuron_eval.csv", index_col=0)
+    eval_bn.rename(
+        columns={'mul_recall': 'multiscale_recall', 'ada_recall': 'adathr_recall', 'my_recall': 'NIEND_recall',
+                 'mul_precision': 'multiscale_precision', 'ada_precision': 'adathr_precision',
+                 'my_precision': 'NIEND_precision'}, inplace=True)
+    eval_bn['raw_f1'] = 2 * (eval_bn['raw_precision'] * eval_bn['raw_recall']) / (
+            eval_bn['raw_precision'] + eval_bn['raw_recall'] + .00001)
+    eval_bn['guo_f1'] = 2 * (eval_bn['guo_precision'] * eval_bn['guo_recall']) / (
+            eval_bn['guo_precision'] + eval_bn['guo_recall'] + .00001)
+    eval_bn['multiscale_f1'] = (2 * (eval_bn['multiscale_precision'] * eval_bn['multiscale_recall']) /
+                                  (eval_bn['multiscale_precision'] + eval_bn['multiscale_recall'] + .00001))
+    eval_bn['adathr_f1'] = 2 * (eval_bn['adathr_precision'] * eval_bn['adathr_recall']) / (
+            eval_bn['adathr_precision'] + eval_bn['adathr_recall'] + .00001)
+    eval_bn['NIEND_f1'] = 2 * (eval_bn['NIEND_precision'] * eval_bn['NIEND_recall']) / (
+            eval_bn['NIEND_precision'] + eval_bn['NIEND_recall'] + .00001)
+
+    eval_psf = pd.read_csv(r"D:\rectify\eval_psf.csv", index_col=0)
+    eval_psf.rename(
+        columns={'my_recall': 'NIEND_recall', 'my_precision': 'NIEND_precision'}, inplace=True)
+    eval_psf = pd.concat([tab.loc[eval_psf.index, 'gold_standard'], eval_psf], axis=1)
+    eval_psf['raw_f1'] = 2 * (eval_psf['raw_precision'] * eval_psf['raw_recall']) / (
+            eval_psf['raw_precision'] + eval_psf['raw_recall'] + .00001)
+    eval_psf['psf_f1'] = 2 * (eval_psf['psf_precision'] * eval_psf['psf_recall']) / (
+            eval_psf['psf_precision'] + eval_psf['psf_recall'] + .00001)
+    eval_psf['NIEND_f1'] = 2 * (eval_psf['NIEND_precision'] * eval_psf['NIEND_recall']) / (
+            eval_psf['NIEND_precision'] + eval_psf['NIEND_recall'] + .00001)
+
+    with pd.ExcelWriter(r'D:\rectify\supp_data.xlsx') as writer:
         tab.to_excel(writer, sheet_name='neuron_metadata', index=False,
                  columns=['gold_standard', 'brain_id', 'soma_x', 'soma_y', 'soma_z', 'sparse'])
         # tab.to_excel(writer, sheet_name='NIEND_time_use', index=False,
@@ -114,4 +188,9 @@ if __name__ == '__main__':
                           'NIEND_LZMA_size', 'raw_pbd_size', 'adathr_pbd_size', 'multiscale_LZMA_size', 'guo_pbd_size',
                           'NIEND_pbd_size'])
         df.to_excel(writer, sheet_name='quality_stats', index=False)
-        eval.to_excel(writer, sheet_name='tracing_stats', index=False)
+        df_psf.to_excel(writer, sheet_name='quality_stats_psf', index=False)
+        eval.to_excel(writer, sheet_name='tracing_stats_app2', index=False)
+        eval_gps.to_excel(writer, sheet_name='tracing_stats_gps', index=False)
+        eval_app1.to_excel(writer, sheet_name='tracing_stats_app1', index=False)
+        eval_bn.to_excel(writer, sheet_name='tracing_stats_bigneuron', index=True)
+        eval_psf.to_excel(writer, sheet_name='tracing_stats_psf', index=True)

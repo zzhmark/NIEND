@@ -2,7 +2,7 @@ from pathlib import Path
 from utils.v3d import terafly
 import numpy as np
 from v3dpy.loaders import Raw
-from niend import simple_niend
+from niend import standard_niend
 
 tera_dir = Path(r'Z:\TeraconvertedBrain')
 out_dir = Path(r'D:/rectify/tera_recon')
@@ -33,7 +33,7 @@ def main(name):
     arr = terafly.Interface.get_subvolume(str(in_path), st[0], ed[0], st[1], ed[1], st[2], ed[2])
     img1 = (arr * (255 / arr.max())).astype('uint8')
     Raw().save(out_path1, np.array([img1]))
-    img2 = simple_niend(arr, 10, 5, 1).astype('uint16') * 255
+    img2 = standard_niend(arr, 10, 5, wavelet_levels=1).astype('uint16') * 255
     Raw().save(out_path2, np.array([img2]))
 
 

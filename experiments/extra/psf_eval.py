@@ -1,6 +1,6 @@
 # evaluate different reconstruction against gold standard
 
-from neuron_quality.metrics import DistanceEvaluation
+from utils.neuron_quality import DistanceEvaluation
 import pandas as pd
 from pathlib import Path
 from multiprocessing import Pool
@@ -13,6 +13,7 @@ from tqdm import tqdm
 wkdir = Path(r"D:\rectify")
 serv_dir = Path(r'Z:\SEU-ALLEN\Users\zuohan\trans\rectify_1891')
 psf_dir = serv_dir / 'psf_app2'
+raw_dir = wkdir / 'raw_app2'
 
 
 class HidePrint:
@@ -27,14 +28,23 @@ class HidePrint:
 
 def main(name: str):
     man = wkdir / 'manual' / name
-    my = psf_dir / name
+    my = wkdir / 'my_app2' / name
+    psf = psf_dir / name
+    raw = raw_dir / name
+
     try:
         with HidePrint():
             de = DistanceEvaluation(15)
             my = de.run(my, man) if my.exists() else None
+            psf = de.run(psf, man) if psf.exists() else None
+            raw = de.run(raw, man) if raw.exists() else None
         return {
-            'recall': 1 - my[2, 1] if my is not None else 0,
-            'precision': 1 - my[2, 0] if my is not None else 1,
+            'raw_recall': 1 - raw[2, 1] if raw is not None else 0,
+            'raw_precision': 1 - raw[2, 0] if raw is not None else 1,
+            'psf_recall': 1 - psf[2, 1] if psf is not None else 0,
+            'psf_precision': 1 - psf[2, 0] if psf is not None else 1,
+            'my_recall': 1 - my[2, 1] if my is not None else 0,
+            'my_precision': 1 - my[2, 0] if my is not None else 1,
         }
     except:
         print(name)
