@@ -1,3 +1,5 @@
+# these are the main functions of niend
+
 import numpy as np
 from skimage.util import img_as_ubyte
 from skimage.restoration import denoise_wavelet

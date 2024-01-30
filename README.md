@@ -35,11 +35,11 @@ img = load_image('xxx.tiff')
 
 ## Repository Contents
 
-* niend.py: main filtering functions, you can import the functions within for your own use.
-* experiments: scripts performing all experiments.
-* plot: scripts plotting figures for our paper.
-* utils: for operating swc, computing metrics, etc.
-* examples: image and tracing files for the same neuronal block.
+* `niend.py`: main filtering functions, you can import the functions within for your own use.
+* `experiments`: scripts performing all experiments.
+* `plot`: scripts plotting figures for our paper.
+* `utils`: for operating swc, computing metrics, etc.
+* `examples`: image and tracing files for the same neuronal block.
 
 More readme can be found under each folder.
 

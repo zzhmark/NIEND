@@ -7,7 +7,7 @@ from random import sample
 
 wkdir = Path(r"D:\rectify")
 crop_path = Path(r"Z:\SEU-ALLEN\Users\zuohan\trans\crop1891\1st")
-out_dir = wkdir / 'highpass_fig'
+out_dir = wkdir / 'highpass_only'
 mandir = wkdir / 'manual'
 
 sampling = 100

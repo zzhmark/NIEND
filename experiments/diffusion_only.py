@@ -10,7 +10,7 @@ from tqdm import tqdm
 
 wkdir = Path(r"D:\rectify")
 crop_path = Path(r"Z:\SEU-ALLEN\Users\zuohan\trans\crop1891\1st")
-out_dir = wkdir / 'diffusion_fig'
+out_dir = wkdir / 'diffusion_only'
 
 
 def main(args):

@@ -1,4 +1,4 @@
-# my new method
+# NIEND on 1891
 
 from pathlib import Path
 from multiprocessing import Pool
